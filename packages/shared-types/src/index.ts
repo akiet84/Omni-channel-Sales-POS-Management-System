@@ -31,8 +31,8 @@ export interface SKU {
   productId: string;
   skuCode: string;
   barcode: string;
-  name: string; // e.g. "Áo Thun Cotton - Màu Trắng / Size L"
-  variantAttributes: Record<string, string>; // e.g. { color: "Trắng", size: "L" }
+  name: string;
+  variantAttributes: Record<string, string>;
   price: number;
   costPrice?: number;
   isActive: boolean;
@@ -41,16 +41,12 @@ export interface SKU {
   inventory?: InventoryBalance;
 }
 
-/**
- * Split Inventory Model (ADR 0004)
- * Available = onHand - reserved
- */
 export interface InventoryBalance {
   id: string;
   skuId: string;
-  onHand: number;   // Physical items present in store / warehouse
-  reserved: number; // Held for pending online orders awaiting fulfillment
-  available: number; // Salable balance = onHand - reserved
+  onHand: number;
+  reserved: number;
+  available: number;
   updatedAt: Date;
 }
 
@@ -99,9 +95,9 @@ export interface Order {
   discountAmount: number;
   taxAmount: number;
   totalAmount: number;
-  amountTendered?: number; // for cash: amount paid by customer
-  changeGiven?: number;    // for cash: change returned to customer
-  paymentReference?: string; // for VietQR: transaction reference
+  amountTendered?: number;
+  changeGiven?: number;
+  paymentReference?: string;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;

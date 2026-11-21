@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding initial omni-channel sales & inventory data...');
 
-  // 1. Create Default Sales Channels
   const posChannel = await prisma.salesChannel.upsert({
     where: { id: 'channel-pos-main' },
     update: {},
@@ -39,7 +38,6 @@ async function main() {
     },
   });
 
-  // 2. Create Default Customer
   await prisma.customer.upsert({
     where: { phone: '0901234567' },
     update: {},
@@ -51,7 +49,6 @@ async function main() {
     },
   });
 
-  // 3. Products & SKUs with split inventory
   const sampleProducts = [
     {
       name: 'Áo Thun Cotton Compact 100%',

@@ -1,9 +1,6 @@
 import { prisma } from '../db.js';
 
 export class InventoryService {
-  /**
-   * Retrieves an SKU along with its split inventory balance (On-hand, Reserved, Available)
-   */
   static async getSkuWithInventory(skuId: string) {
     return prisma.sKU.findUnique({
       where: { id: skuId },
@@ -14,9 +11,6 @@ export class InventoryService {
     });
   }
 
-  /**
-   * Finds SKU by barcode or SKU code
-   */
   static async findByBarcodeOrCode(code: string) {
     return prisma.sKU.findFirst({
       where: {
@@ -30,9 +24,6 @@ export class InventoryService {
     });
   }
 
-  /**
-   * Lists SKUs with inventory balance, with optional keyword search
-   */
   static async listSkus(query?: string) {
     return prisma.sKU.findMany({
       where: query
@@ -54,10 +45,6 @@ export class InventoryService {
     });
   }
 
-  /**
-   * Adjusts inventory according to ADR 0004
-   * Available is always maintained as onHand - reserved
-   */
   static async adjustInventory(
     skuId: string,
     onHandDelta: number = 0,

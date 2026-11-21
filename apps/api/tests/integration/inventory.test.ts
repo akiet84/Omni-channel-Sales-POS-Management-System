@@ -4,7 +4,6 @@ import { InventoryService } from '../../src/services/inventory.service.js';
 
 describe('InventoryService & Split Inventory Model (ADR 0004)', () => {
   beforeAll(async () => {
-    // Clean up any test product
     await prisma.sKU.deleteMany({
       where: { skuCode: { startsWith: 'TEST-SKU-' } },
     });
@@ -37,7 +36,7 @@ describe('InventoryService & Split Inventory Model (ADR 0004)', () => {
           create: {
             onHand: 20,
             reserved: 5,
-            available: 15, // 20 - 5
+            available: 15,
           },
         },
       },
@@ -64,24 +63,21 @@ describe('InventoryService & Split Inventory Model (ADR 0004)', () => {
     const sku = await InventoryService.findByBarcodeOrCode('TEST-SKU-001');
     expect(sku).not.toBeNull();
 
-    // Deduct 2 from on-hand (e.g. POS sale)
     const updated = await InventoryService.adjustInventory(sku!.id, -2, 0);
     expect(updated.onHand).toBe(18);
     expect(updated.reserved).toBe(5);
-    expect(updated.available).toBe(13); // 18 - 5
+    expect(updated.available).toBe(13);
 
-    // Add 3 to reserved (e.g. incoming online order)
     const updated2 = await InventoryService.adjustInventory(sku!.id, 0, 3);
     expect(updated2.onHand).toBe(18);
     expect(updated2.reserved).toBe(8);
-    expect(updated2.available).toBe(10); // 18 - 8
+    expect(updated2.available).toBe(10);
   });
 
   it('rejects deduction when available stock is insufficient', async () => {
     const sku = await InventoryService.findByBarcodeOrCode('TEST-SKU-001');
     expect(sku).not.toBeNull();
 
-    // Currently available is 10. Trying to deduct 15 on-hand should throw
     await expect(
       InventoryService.adjustInventory(sku!.id, -15, 0)
     ).rejects.toThrow(/Insufficient available stock/);
@@ -91,7 +87,6 @@ describe('InventoryService & Split Inventory Model (ADR 0004)', () => {
     const sku = await InventoryService.findByBarcodeOrCode('TEST-SKU-001');
     expect(sku).not.toBeNull();
 
-    // Reserved is currently 8. Trying to decrement by 10 (reservedDelta = -10) must be rejected
     await expect(
       InventoryService.adjustInventory(sku!.id, 0, -10)
     ).rejects.toThrow(/reserved cannot be negative/);
