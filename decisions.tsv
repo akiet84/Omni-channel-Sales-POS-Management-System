@@ -13,3 +13,7 @@ ts	phase	decision	why	evidence	result
 2026-11-21T06:01:28Z	harness	Generated verify-omni-sales-pos verification skill and feature map	Provides automated launch, doctor check, and driving recipes for next agents	.agents/skills/verify-omni-sales-pos/SKILL.md	ready-for-driving
 2026-11-21T06:02:04Z	verify	Proved verification skill end-to-end and persisted proof evidence	Demonstrates app starts, doctor passes, and features respond as expected	.scratch/verification-proof/run-01/evidence.json	proven and cleaned up
 2026-11-21T06:08:33Z	interrogate	Adversarial stress-test proved negative reserved inventory vulnerability	Repro demonstrated reserved < 0 inflates Available above On-hand	apps/api/src/services/inventory.service.ts:75	finding proven by run
+2026-11-21T06:15:34Z	correct	Eliminated negative reserved inventory vulnerability at domain layer	Enforces 0 <= reserved and prevents available from exceeding on-hand	apps/api/src/services/inventory.service.ts:83	commit 7fa3184
+2026-11-21T06:15:34Z	correct	Recorded enforcement rules table in AGENTS.md	Documents mistake classes and pairs each rule with what enforces it	AGENTS.md	rules table active
+2026-11-21T06:22:09Z	refactor	Removed 36 lines of redundant comments, banners, and narration	Preserves self-documenting code and eliminates clutter	commit 9962743	36 lines deleted, tests green
+2026-11-21T06:23:00Z	unslop	Audited repository prose and enforcement guidelines against AI tells	Maintains direct, factual, active-voice technical documentation without filler	GLOSSARY.md, docs/adr/	prose verified
