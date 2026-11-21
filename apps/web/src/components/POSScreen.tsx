@@ -151,6 +151,11 @@ export function POSScreen({ skus }: POSScreenProps) {
     );
   };
 
+  const clearCartRef = useRef(clearCart);
+  clearCartRef.current = clearCart;
+  const handleCheckoutRef = useRef(handleCheckout);
+  handleCheckoutRef.current = handleCheckout;
+
   // Keyboard shortcut listener: F2 (search), F8 (clear cart), F9 (checkout)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -160,16 +165,16 @@ export function POSScreen({ skus }: POSScreenProps) {
         searchInputRef.current?.select();
       } else if (e.key === 'F8') {
         e.preventDefault();
-        clearCart();
+        clearCartRef.current();
       } else if (e.key === 'F9') {
         e.preventDefault();
-        handleCheckout();
+        handleCheckoutRef.current();
       }
     };
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  });
+  }, []);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '1.5rem' }}>

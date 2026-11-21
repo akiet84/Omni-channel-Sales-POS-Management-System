@@ -141,22 +141,29 @@ export interface LineTotalCalculation {
 }
 
 /**
+ * Calculates discount amount clamped between 0 and baseAmount.
+ */
+export function calculateDiscountAmount(baseAmount: number, discount?: Discount): number {
+  if (!discount || discount.value <= 0) {
+    return 0;
+  }
+  if (discount.type === 'PERCENTAGE') {
+    const pct = Math.min(100, Math.max(0, discount.value));
+    return Math.round((baseAmount * pct) / 100);
+  }
+  if (discount.type === 'FIXED') {
+    return Math.min(baseAmount, Math.max(0, discount.value));
+  }
+  return 0;
+}
+
+/**
  * Calculates line total, handling percentage or fixed discounts.
  * Capped so discount cannot exceed rawTotal, and percentage is clamped between 0 and 100.
  */
 export function calculateLineTotal(item: CartItem): LineTotalCalculation {
   const rawTotal = item.sku.price * item.quantity;
-  let discountAmount = 0;
-
-  if (item.discount && item.discount.value > 0) {
-    if (item.discount.type === 'PERCENTAGE') {
-      const pct = Math.min(100, Math.max(0, item.discount.value));
-      discountAmount = Math.round((rawTotal * pct) / 100);
-    } else if (item.discount.type === 'FIXED') {
-      discountAmount = Math.min(rawTotal, Math.max(0, item.discount.value));
-    }
-  }
-
+  const discountAmount = calculateDiscountAmount(rawTotal, item.discount);
   const finalTotal = Math.max(0, rawTotal - discountAmount);
 
   return {
@@ -184,17 +191,7 @@ export function calculateCartTotals(
   }
 
   const subtotalAfterLines = Math.max(0, rawSubtotal - lineDiscountTotal);
-  let orderDiscountAmount = 0;
-
-  if (orderDiscount && orderDiscount.value > 0) {
-    if (orderDiscount.type === 'PERCENTAGE') {
-      const pct = Math.min(100, Math.max(0, orderDiscount.value));
-      orderDiscountAmount = Math.round((subtotalAfterLines * pct) / 100);
-    } else if (orderDiscount.type === 'FIXED') {
-      orderDiscountAmount = Math.min(subtotalAfterLines, Math.max(0, orderDiscount.value));
-    }
-  }
-
+  const orderDiscountAmount = calculateDiscountAmount(subtotalAfterLines, orderDiscount);
   const taxableAmount = Math.max(0, subtotalAfterLines - orderDiscountAmount);
   const vatAmount = Math.round(taxableAmount * vatRate);
   const totalPayable = taxableAmount + vatAmount;
