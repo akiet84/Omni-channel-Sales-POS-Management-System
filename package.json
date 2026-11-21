@@ -1,0 +1,17 @@
+{
+  "name": "omni-sales-pos-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Omni-channel Sales & POS Management System",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "seed": "pnpm --filter @omni-sales/api run seed",
+    "dev:api": "pnpm --filter @omni-sales/api run dev",
+    "dev:web": "pnpm --filter @omni-sales/web run dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
