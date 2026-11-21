@@ -17,3 +17,4 @@ ts	phase	decision	why	evidence	result
 2026-11-21T06:15:34Z	correct	Recorded enforcement rules table in AGENTS.md	Documents mistake classes and pairs each rule with what enforces it	AGENTS.md	rules table active
 2026-11-21T06:22:09Z	refactor	Removed 36 lines of redundant comments, banners, and narration	Preserves self-documenting code and eliminates clutter	commit 9962743	36 lines deleted, tests green
 2026-11-21T06:23:00Z	unslop	Audited repository prose and enforcement guidelines against AI tells	Maintains direct, factual, active-voice technical documentation without filler	GLOSSARY.md, docs/adr/	prose verified
+2026-11-21T06:37:38Z	reflect	Updated writing-for-agents and implement skills with durable learnings	Encodes Antigravity skill structure and pnpm v11 approve-builds handling	commit 24134fe	skills updated
