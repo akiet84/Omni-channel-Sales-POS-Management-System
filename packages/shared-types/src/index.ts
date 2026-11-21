@@ -210,6 +210,23 @@ export function calculateCartTotals(
 }
 
 /**
+ * Resolves available inventory for a SKU, strictly upholding Available = max(0, onHand - reserved).
+ */
+export function getAvailableInventory(sku: SKU): number {
+  if (!sku.inventory) return 0;
+  if (
+    typeof sku.inventory.onHand === 'number' &&
+    typeof sku.inventory.reserved === 'number'
+  ) {
+    return Math.max(0, sku.inventory.onHand - sku.inventory.reserved);
+  }
+  if (typeof sku.inventory.available === 'number') {
+    return Math.max(0, sku.inventory.available);
+  }
+  return 0;
+}
+
+/**
  * Validates if quantity can be added or incremented based on Available Inventory.
  * Strictly enforces domain invariant: Available = max(0, OnHand - Reserved).
  */
@@ -225,19 +242,7 @@ export function canAddOrIncrement(item: CartItem, delta: number): boolean {
     return true;
   }
 
-  // Enforce Available = onHand - reserved consistently
-  let available = 0;
-  if (item.sku.inventory) {
-    if (
-      typeof item.sku.inventory.onHand === 'number' &&
-      typeof item.sku.inventory.reserved === 'number'
-    ) {
-      available = Math.max(0, item.sku.inventory.onHand - item.sku.inventory.reserved);
-    } else if (typeof item.sku.inventory.available === 'number') {
-      available = Math.max(0, item.sku.inventory.available);
-    }
-  }
-
+  const available = getAvailableInventory(item.sku);
   return targetQuantity <= available;
 }
 
@@ -260,27 +265,4 @@ export interface CreatePOSOrderDTO {
   paymentMethod: PaymentMethod;
   amountTendered?: number;
   notes?: string;
-}
-
-export interface CheckoutResultDTO {
-  success: boolean;
-  order: Order;
-  changeGiven: number;
-}
-
-// ---------------------------------------------------------
-// Domain Events (for Outbound Sync & Queue Processing)
-// ---------------------------------------------------------
-
-export interface InventoryChangedEvent {
-  skuId: string;
-  skuCode: string;
-  previousOnHand: number;
-  newOnHand: number;
-  previousReserved: number;
-  newReserved: number;
-  previousAvailable: number;
-  newAvailable: number;
-  reason: 'POS_CHECKOUT' | 'WEBHOOK_ORDER' | 'ORDER_CANCELLED' | 'RETURN' | 'MANUAL_ADJUST';
-  timestamp: Date;
 }

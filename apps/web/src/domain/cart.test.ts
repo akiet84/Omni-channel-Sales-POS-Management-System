@@ -1,12 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import type { SKU } from '@omni-sales/shared-types';
 import {
+  type SKU,
+  type CartItem,
+  getAvailableInventory,
   calculateDiscountAmount,
   calculateLineTotal,
   calculateCartTotals,
   canAddOrIncrement,
-  type CartItem,
-} from './cart';
+} from '@omni-sales/shared-types';
 
 const mockSkuA: SKU = {
   id: 'sku-1',
@@ -51,6 +52,31 @@ const mockSkuB: SKU = {
 };
 
 describe('Cart Domain Calculations', () => {
+  describe('getAvailableInventory', () => {
+    it('returns 0 when inventory is undefined', () => {
+      expect(getAvailableInventory({ ...mockSkuA, inventory: undefined })).toBe(0);
+    });
+
+    it('calculates available as onHand - reserved', () => {
+      expect(getAvailableInventory(mockSkuA)).toBe(7); // 10 - 3 = 7
+    });
+
+    it('enforces non-negative available when reserved exceeds onHand', () => {
+      const overReserved: SKU = {
+        ...mockSkuA,
+        inventory: {
+          id: 'inv-neg',
+          skuId: 'sku-1',
+          onHand: 2,
+          reserved: 5,
+          available: 0,
+          updatedAt: new Date(),
+        },
+      };
+      expect(getAvailableInventory(overReserved)).toBe(0);
+    });
+  });
+
   describe('calculateDiscountAmount', () => {
     it('returns 0 when discount is undefined or value <= 0', () => {
       expect(calculateDiscountAmount(100_000, undefined)).toBe(0);
