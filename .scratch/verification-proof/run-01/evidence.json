@@ -1,0 +1,76 @@
+﻿{
+    "doctor":  {
+                   "webHttpCode":  200,
+                   "apiHealth":  {
+                                     "status":  "ok",
+                                     "timestamp":  "2026-11-21T06:02:04.452Z"
+                                 }
+               },
+    "timestamp":  "2026-11-21T13:02:04.7275059+07:00",
+    "runId":  "run-01",
+    "webFrontend":  {
+                        "rendersHtmlTitle":  [
+                                                 "    \u003ctitle\u003eOmni POS - Bán Hàng Đa Kênh\u003c/title\u003e"
+                                             ]
+                    },
+    "feature_sales_channels":  {
+                                   "totalChannels":  3,
+                                   "channels":  [
+                                                    {
+                                                        "active":  true,
+                                                        "name":  "Cửa hàng chính (POS Quầy)",
+                                                        "type":  "POS"
+                                                    },
+                                                    {
+                                                        "active":  true,
+                                                        "name":  "Gian hàng Shopee Mall",
+                                                        "type":  "SHOPEE"
+                                                    },
+                                                    {
+                                                        "active":  true,
+                                                        "name":  "TikTok Shop Official",
+                                                        "type":  "TIKTOK_SHOP"
+                                                    }
+                                                ]
+                               },
+    "feature_inventory_overview":  {
+                                       "totalSkus":  10,
+                                       "sampleSku":  {
+                                                         "id":  "cmwpzy9lu000yvhj0huq85et2",
+                                                         "productId":  "cmwpzy9lj000wvhj0pd2omx3r",
+                                                         "skuCode":  "VI-DA-NAU",
+                                                         "barcode":  "893600500501",
+                                                         "name":  "Ví Da Nam Cầm Tay - Nâu Da Bò",
+                                                         "variantAttributes":  "{\"color\":\"Nâu Da Bò\"}",
+                                                         "price":  290000,
+                                                         "costPrice":  120000,
+                                                         "isActive":  true,
+                                                         "createdAt":  "2026-11-21T05:58:04.578Z",
+                                                         "updatedAt":  "2026-11-21T05:58:04.578Z",
+                                                         "inventory":  {
+                                                                           "id":  "cmwpzy9lu000zvhj0ocbxvsxa",
+                                                                           "skuId":  "cmwpzy9lu000yvhj0huq85et2",
+                                                                           "onHand":  30,
+                                                                           "reserved":  0,
+                                                                           "available":  30,
+                                                                           "updatedAt":  "2026-11-21T05:58:04.578Z"
+                                                                       },
+                                                         "product":  {
+                                                                         "id":  "cmwpzy9lj000wvhj0pd2omx3r",
+                                                                         "name":  "Ví Da Nam Cầm Tay Cao Cấp",
+                                                                         "description":  null,
+                                                                         "category":  "Phụ kiện",
+                                                                         "basePrice":  290000,
+                                                                         "isActive":  true,
+                                                                         "createdAt":  "2026-11-21T05:58:04.567Z",
+                                                                         "updatedAt":  "2026-11-21T05:58:04.567Z"
+                                                                     }
+                                                     },
+                                       "mathVerified":  true
+                                   },
+    "feature_barcode_search":  {
+                                   "matchedSkuCode":  "AT-COT-TRANG-M",
+                                   "matchedName":  "Áo Thun Cotton - Trắng / M",
+                                   "searchedBarcode":  "893600100101"
+                               }
+}
