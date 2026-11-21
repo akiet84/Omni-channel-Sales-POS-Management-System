@@ -7,6 +7,7 @@ import {
   calculateLineTotal,
   calculateCartTotals,
   canAddOrIncrement,
+  canAdjustQuantity,
 } from '@omni-sales/shared-types';
 
 const mockSkuA: SKU = {
@@ -58,7 +59,7 @@ describe('Cart Domain Calculations', () => {
     });
 
     it('calculates available as onHand - reserved', () => {
-      expect(getAvailableInventory(mockSkuA)).toBe(7); // 10 - 3 = 7
+      expect(getAvailableInventory(mockSkuA)).toBe(7);
     });
 
     it('enforces non-negative available when reserved exceeds onHand', () => {
@@ -84,14 +85,12 @@ describe('Cart Domain Calculations', () => {
       expect(calculateDiscountAmount(100_000, { type: 'PERCENTAGE', value: -10 })).toBe(0);
     });
 
-    // Finding 1 & 4 from Interrogate: NaN handling
     it('returns 0 when discount value is NaN or not finite', () => {
       expect(calculateDiscountAmount(100_000, { type: 'PERCENTAGE', value: NaN })).toBe(0);
       expect(calculateDiscountAmount(100_000, { type: 'FIXED', value: NaN })).toBe(0);
       expect(calculateDiscountAmount(100_000, { type: 'PERCENTAGE', value: Infinity })).toBe(0);
     });
 
-    // Finding 2 from Interrogate: Negative base amount
     it('returns 0 when base amount is <= 0', () => {
       expect(calculateDiscountAmount(-100_000, { type: 'FIXED', value: 50_000 })).toBe(0);
       expect(calculateDiscountAmount(0, { type: 'FIXED', value: 50_000 })).toBe(0);
@@ -141,12 +140,12 @@ describe('Cart Domain Calculations', () => {
       const items: CartItem[] = [
         {
           sku: mockSkuA,
-          quantity: 2, // 400_000 - 10% = 360_000
+          quantity: 2,
           discount: { type: 'PERCENTAGE', value: 10 },
         },
         {
           sku: mockSkuB,
-          quantity: 1, // 500_000 - 50_000 = 450_000
+          quantity: 1,
           discount: { type: 'FIXED', value: 50_000 },
         },
       ];
@@ -173,7 +172,6 @@ describe('Cart Domain Calculations', () => {
       expect(totals.totalPayable).toBe(0);
     });
 
-    // Finding 1 & 4 from Interrogate: NaN does not poison cart totals
     it('does not poison cart totals with NaN when discount value is NaN', () => {
       const items: CartItem[] = [
         {
@@ -189,30 +187,30 @@ describe('Cart Domain Calculations', () => {
       expect(Number.isNaN(totals.totalPayable)).toBe(false);
       expect(totals.lineDiscountTotal).toBe(0);
       expect(totals.orderDiscountAmount).toBe(0);
-      expect(totals.totalPayable).toBe(220_000); // 200k + 10% VAT
+      expect(totals.totalPayable).toBe(220_000);
     });
   });
 
-  describe('canAddOrIncrement', () => {
+  describe('canAdjustQuantity / canAddOrIncrement', () => {
     it('permits adding or incrementing within available inventory limit', () => {
-      const item: CartItem = { sku: mockSkuA, quantity: 5 }; // available = 7
+      const item: CartItem = { sku: mockSkuA, quantity: 5 };
+      expect(canAdjustQuantity(item, 1)).toBe(true);
+      expect(canAdjustQuantity(item, 2)).toBe(true);
+      expect(canAdjustQuantity(item, 3)).toBe(false);
       expect(canAddOrIncrement(item, 1)).toBe(true);
-      expect(canAddOrIncrement(item, 2)).toBe(true);
-      expect(canAddOrIncrement(item, 3)).toBe(false); // exceeds 7
     });
 
     it('rejects decrementing to 0 or below', () => {
       const item: CartItem = { sku: mockSkuA, quantity: 1 };
-      expect(canAddOrIncrement(item, -1)).toBe(false);
+      expect(canAdjustQuantity(item, -1)).toBe(false);
     });
 
     it('handles SKU with no inventory recorded gracefully', () => {
       const skuWithoutInventory: SKU = { ...mockSkuA, inventory: undefined };
       const item: CartItem = { sku: skuWithoutInventory, quantity: 1 };
-      expect(canAddOrIncrement(item, 1)).toBe(false);
+      expect(canAdjustQuantity(item, 1)).toBe(false);
     });
 
-    // Finding 3 from Interrogate: Enforce Available = On-hand - Reserved
     it('enforces available = onHand - reserved even if available field is desynced or missing', () => {
       const desyncedSku: SKU = {
         ...mockSkuA,
@@ -221,12 +219,12 @@ describe('Cart Domain Calculations', () => {
           skuId: 'sku-1',
           onHand: 10,
           reserved: 10,
-          available: 5, // Desynced! Actual available is 10 - 10 = 0
+          available: 5,
           updatedAt: new Date(),
         },
       };
       const item: CartItem = { sku: desyncedSku, quantity: 1 };
-      expect(canAddOrIncrement(item, 1)).toBe(false);
+      expect(canAdjustQuantity(item, 1)).toBe(false);
     });
 
     it('correctly computes available when available property is omitted/undefined', () => {
@@ -237,15 +235,13 @@ describe('Cart Domain Calculations', () => {
           skuId: 'sku-1',
           onHand: 10,
           reserved: 2,
-          available: undefined as unknown as number, // omitted
           updatedAt: new Date(),
         },
       };
       const item: CartItem = { sku: omittedAvailableSku, quantity: 1 };
-      expect(canAddOrIncrement(item, 1)).toBe(true); // target 2 <= (10 - 2 = 8)
+      expect(canAdjustQuantity(item, 1)).toBe(true);
     });
 
-    // Finding 5 from Interrogate: Allow decreasing quantity towards limit
     it('allows decrementing quantity (delta < 0) even if current quantity exceeds current available stock', () => {
       const reducedStockSku: SKU = {
         ...mockSkuA,
@@ -258,11 +254,9 @@ describe('Cart Domain Calculations', () => {
           updatedAt: new Date(),
         },
       };
-      const item: CartItem = { sku: reducedStockSku, quantity: 4 }; // Cart had 4 before stock was reserved
-      // Decrementing from 4 to 3 (delta = -1) should be permitted
-      expect(canAddOrIncrement(item, -1)).toBe(true);
-      // But incrementing from 4 to 5 should still be rejected
-      expect(canAddOrIncrement(item, 1)).toBe(false);
+      const item: CartItem = { sku: reducedStockSku, quantity: 4 };
+      expect(canAdjustQuantity(item, -1)).toBe(true);
+      expect(canAdjustQuantity(item, 1)).toBe(false);
     });
   });
 });

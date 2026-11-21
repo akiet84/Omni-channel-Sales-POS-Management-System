@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
   type SKU,
   type CartItem,
@@ -9,6 +9,7 @@ import {
   canAddOrIncrement,
   getAvailableInventory,
 } from '@omni-sales/shared-types';
+import { usePOSHotkeys } from '../hooks/usePOSHotkeys';
 import {
   Barcode,
   Search,
@@ -41,10 +42,8 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Cart calculations
   const totals = calculateCartTotals(cart, orderDiscount, 0.10);
 
-  // Filter SKU suggestions using trimmed query
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const suggestions = trimmedQuery
     ? skus.filter(
@@ -188,91 +187,53 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
     }
   };
 
-  // Keep references to stateful handlers for stable event listener
-  const cartRef = useRef(cart);
-  cartRef.current = cart;
-  const selectedRowRef = useRef(selectedRowIndex);
-  selectedRowRef.current = selectedRowIndex;
-  const clearCartRef = useRef(clearCart);
-  clearCartRef.current = clearCart;
-  const handleOpenCheckoutRef = useRef(handleOpenCheckout);
-  handleOpenCheckoutRef.current = handleOpenCheckout;
-  const showModalRef = useRef(showCheckoutModal);
-  showModalRef.current = showCheckoutModal;
-
-  // Global keyboard shortcut listener
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Priority hotkeys: F2, F8, F9, Escape
-      if (e.key === 'F2') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-        searchInputRef.current?.select();
-        return;
+  usePOSHotkeys({
+    onF2: () => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    },
+    onF8: () => {
+      clearCart();
+    },
+    onF9: () => {
+      handleOpenCheckout();
+    },
+    onEscape: () => {
+      if (showCheckoutModal) {
+        setShowCheckoutModal(false);
+      } else {
+        setShowSuggestions(false);
       }
-      if (e.key === 'F8') {
-        e.preventDefault();
-        clearCartRef.current();
-        return;
+    },
+    onArrowDown: () => {
+      setSelectedRowIndex((prev) => Math.min(cart.length - 1, prev + 1));
+    },
+    onArrowUp: () => {
+      setSelectedRowIndex((prev) => Math.max(0, prev - 1));
+    },
+    onIncrement: () => {
+      const currentItem = cart[selectedRowIndex];
+      if (currentItem) {
+        updateQuantity(currentItem.sku.id, 1);
       }
-      if (e.key === 'F9') {
-        e.preventDefault();
-        handleOpenCheckoutRef.current();
-        return;
+    },
+    onDecrement: () => {
+      const currentItem = cart[selectedRowIndex];
+      if (currentItem) {
+        updateQuantity(currentItem.sku.id, -1);
       }
-      if (e.key === 'Escape') {
-        if (showModalRef.current) {
-          setShowCheckoutModal(false);
-        } else {
-          setShowSuggestions(false);
-        }
-        return;
+    },
+    onDelete: () => {
+      const currentItem = cart[selectedRowIndex];
+      if (currentItem) {
+        removeFromCart(currentItem.sku.id);
       }
-
-      // Arrow navigation when not actively typing in an input/select
-      const activeElement = document.activeElement;
-      const isTyping =
-        activeElement &&
-        (activeElement.tagName === 'INPUT' ||
-          activeElement.tagName === 'SELECT' ||
-          activeElement.tagName === 'TEXTAREA');
-
-      if (!isTyping && cartRef.current.length > 0) {
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          setSelectedRowIndex((prev) => Math.min(cartRef.current.length - 1, prev + 1));
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          setSelectedRowIndex((prev) => Math.max(0, prev - 1));
-        } else if (e.key === 'ArrowRight' || e.key === '+') {
-          e.preventDefault();
-          const currentItem = cartRef.current[selectedRowRef.current];
-          if (currentItem) {
-            updateQuantity(currentItem.sku.id, 1);
-          }
-        } else if (e.key === 'ArrowLeft' || e.key === '-') {
-          e.preventDefault();
-          const currentItem = cartRef.current[selectedRowRef.current];
-          if (currentItem) {
-            updateQuantity(currentItem.sku.id, -1);
-          }
-        } else if (e.key === 'Delete') {
-          e.preventDefault();
-          const currentItem = cartRef.current[selectedRowRef.current];
-          if (currentItem) {
-            removeFromCart(currentItem.sku.id);
-          }
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, []);
+    },
+    hasItems: cart.length > 0,
+  });
 
   return (
     <div>
-      {/* Toast Notification Banner */}
       {notification && (
         <div
           style={{
@@ -296,7 +257,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
         </div>
       )}
 
-      {/* Keyboard Helper Bar */}
       <div
         style={{
           display: 'flex',
@@ -329,9 +289,7 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '1.5rem' }}>
-        {/* Left panel: Search & Cart Table */}
         <div>
-          {/* Barcode & Search Box */}
           <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
             <div
               style={{
@@ -379,7 +337,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
               )}
             </div>
 
-            {/* Autocomplete Suggestions dropdown */}
             {showSuggestions && suggestions.length > 0 && (
               <div
                 style={{
@@ -456,7 +413,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
             )}
           </div>
 
-          {/* Cart Item Table */}
           <div
             style={{
               background: '#fff',
@@ -652,7 +608,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
           </div>
         </div>
 
-        {/* Right panel: Order Summary & Checkout */}
         <div>
           <div
             style={{
@@ -667,7 +622,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
               Thông tin đơn hàng
             </h3>
 
-            {/* Subtotal */}
             <div
               style={{
                 display: 'flex',
@@ -680,7 +634,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
               <span>{totals.rawSubtotal.toLocaleString('vi-VN')} đ</span>
             </div>
 
-            {/* Line discount total */}
             <div
               style={{
                 display: 'flex',
@@ -693,7 +646,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
               <span>-{totals.lineDiscountTotal.toLocaleString('vi-VN')} đ</span>
             </div>
 
-            {/* Order discount control */}
             <div style={{ margin: '1rem 0', borderTop: '1px dashed #e5e7eb', paddingTop: '0.75rem' }}>
               <label
                 style={{
@@ -756,7 +708,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
               </div>
             </div>
 
-            {/* Taxable and VAT */}
             <div
               style={{
                 display: 'flex',
@@ -787,7 +738,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
               </span>
             </div>
 
-            {/* Action Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.5rem' }}>
               <button
                 onClick={handleOpenCheckout}
@@ -839,7 +789,6 @@ export function POSScreen({ skus, onCheckoutComplete }: POSScreenProps) {
         </div>
       </div>
 
-      {/* Checkout Transition Modal (F9) */}
       {showCheckoutModal && (
         <div
           style={{

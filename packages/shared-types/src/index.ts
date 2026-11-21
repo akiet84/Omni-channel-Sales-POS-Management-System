@@ -46,7 +46,7 @@ export interface InventoryBalance {
   skuId: string;
   onHand: number;
   reserved: number;
-  available: number;
+  available?: number;
   updatedAt: Date;
 }
 
@@ -105,10 +105,6 @@ export interface Order {
   customer?: Customer;
   channel?: SalesChannel;
 }
-
-// ---------------------------------------------------------
-// Pricing, Discounts & Cart Domain
-// ---------------------------------------------------------
 
 export type DiscountType = 'PERCENTAGE' | 'FIXED';
 
@@ -227,17 +223,16 @@ export function getAvailableInventory(sku: SKU): number {
 }
 
 /**
- * Validates if quantity can be added or incremented based on Available Inventory.
+ * Validates if quantity can be added, incremented, or decremented based on Available Inventory.
  * Strictly enforces domain invariant: Available = max(0, OnHand - Reserved).
  */
-export function canAddOrIncrement(item: CartItem, delta: number): boolean {
+export function canAdjustQuantity(item: CartItem, delta: number): boolean {
   const targetQuantity = item.quantity + delta;
 
   if (targetQuantity <= 0) {
     return false;
   }
 
-  // If decreasing quantity (delta < 0), always allow reducing towards or below stock limit
   if (delta < 0) {
     return true;
   }
@@ -246,9 +241,7 @@ export function canAddOrIncrement(item: CartItem, delta: number): boolean {
   return targetQuantity <= available;
 }
 
-// ---------------------------------------------------------
-// Checkout & Order DTOs
-// ---------------------------------------------------------
+export const canAddOrIncrement = canAdjustQuantity;
 
 export interface CreatePOSOrderItemDTO {
   skuId: string;

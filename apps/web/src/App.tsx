@@ -39,7 +39,6 @@ export function App() {
           </p>
         </div>
 
-        {/* Tab Switcher */}
         <div style={{ display: 'flex', gap: '0.5rem', background: '#f3f4f6', padding: '0.3rem', borderRadius: '8px' }}>
           <button
             onClick={() => setCurrentTab('pos')}
