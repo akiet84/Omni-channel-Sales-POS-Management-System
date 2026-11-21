@@ -142,9 +142,10 @@ export interface LineTotalCalculation {
 
 /**
  * Calculates discount amount clamped between 0 and baseAmount.
+ * Safely guards against negative base amounts and non-finite / NaN values.
  */
 export function calculateDiscountAmount(baseAmount: number, discount?: Discount): number {
-  if (!discount || discount.value <= 0) {
+  if (baseAmount <= 0 || !discount || !Number.isFinite(discount.value) || discount.value <= 0) {
     return 0;
   }
   if (discount.type === 'PERCENTAGE') {
@@ -210,14 +211,31 @@ export function calculateCartTotals(
 
 /**
  * Validates if quantity can be added or incremented based on Available Inventory.
- * Available = OnHand - Reserved.
+ * Strictly enforces domain invariant: Available = max(0, OnHand - Reserved).
  */
 export function canAddOrIncrement(item: CartItem, delta: number): boolean {
-  const available = item.sku.inventory?.available ?? 0;
   const targetQuantity = item.quantity + delta;
 
   if (targetQuantity <= 0) {
     return false;
+  }
+
+  // If decreasing quantity (delta < 0), always allow reducing towards or below stock limit
+  if (delta < 0) {
+    return true;
+  }
+
+  // Enforce Available = onHand - reserved consistently
+  let available = 0;
+  if (item.sku.inventory) {
+    if (
+      typeof item.sku.inventory.onHand === 'number' &&
+      typeof item.sku.inventory.reserved === 'number'
+    ) {
+      available = Math.max(0, item.sku.inventory.onHand - item.sku.inventory.reserved);
+    } else if (typeof item.sku.inventory.available === 'number') {
+      available = Math.max(0, item.sku.inventory.available);
+    }
   }
 
   return targetQuantity <= available;

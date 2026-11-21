@@ -8,6 +8,7 @@ export {
   type CartItem,
   type CartTotals,
   type LineTotalCalculation,
+  calculateDiscountAmount,
   calculateLineTotal,
   calculateCartTotals,
   canAddOrIncrement,

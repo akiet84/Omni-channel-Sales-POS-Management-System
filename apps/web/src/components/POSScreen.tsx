@@ -37,12 +37,13 @@ export function POSScreen({ skus }: POSScreenProps) {
   const totals = calculateCartTotals(cart, orderDiscount, 0.10);
 
   // Filter SKU suggestions
-  const suggestions = searchQuery.trim()
+  const trimmedQuery = searchQuery.trim().toLowerCase();
+  const suggestions = trimmedQuery
     ? skus.filter(
         (s) =>
-          s.barcode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          s.skuCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          s.name.toLowerCase().includes(searchQuery.toLowerCase())
+          s.barcode.toLowerCase().includes(trimmedQuery) ||
+          s.skuCode.toLowerCase().includes(trimmedQuery) ||
+          s.name.toLowerCase().includes(trimmedQuery)
       )
     : [];
 
@@ -135,9 +136,10 @@ export function POSScreen({ skus }: POSScreenProps) {
   };
 
   const clearCart = () => {
-    if (cart.length === 0) return;
+    if (cart.length === 0 && (!orderDiscount.value || orderDiscount.value === 0)) return;
     if (window.confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng (F8)?')) {
       setCart([]);
+      setOrderDiscount({ type: 'FIXED', value: 0 });
     }
   };
 
