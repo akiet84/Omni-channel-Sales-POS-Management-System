@@ -14,10 +14,10 @@ This skill provides an automated, programmatic way for an agent to launch, docto
 Start the backend API and frontend Vite server from the repository root:
 
 ### Step 1.1: Ensure Database & Seed Data
-Before starting the servers, ensure the database schema is up to date and seeded:
+Before starting the servers, ensure the database schema is up to date and seeded (use `--force-reset` to ensure clean baseline seeding without unique constraint collisions):
 
 ```powershell
-pnpm --filter @omni-sales/api run db:push
+pnpm --filter @omni-sales/api exec prisma db push --force-reset
 pnpm --filter @omni-sales/api run seed
 ```
 
@@ -30,7 +30,7 @@ Start the Fastify API server on port 3001 in the background:
 pnpm --filter @omni-sales/api run dev
 ```
 
-**Ready condition:** The process logs `Server listening on http://0.0.0.0:3001` and responds with HTTP 200 on `http://127.0.0.1:3001/healthz`.
+**Ready condition:** The process logs `Server listening on http://0.0.0.0:3001` and responds with HTTP 200 on `http://localhost:3001/healthz`.
 
 ### Step 1.3: Launch Web Application
 Start the Vite development server on port 5173 in the background:
@@ -39,7 +39,7 @@ Start the Vite development server on port 5173 in the background:
 pnpm --filter @omni-sales/web run dev -- --port 5173 --strictPort
 ```
 
-**Ready condition:** The process logs `ready in ... ms` and responds with HTTP 200 on `http://127.0.0.1:5173`.
+**Ready condition:** The process logs `ready in ... ms` and responds with HTTP 200 on `http://localhost:5173`.
 
 ---
 
@@ -49,15 +49,15 @@ Run this read-only health check first whenever an instance appears non-responsiv
 
 ```powershell
 # 1. Check API Health endpoint
-$apiHealth = curl.exe -s http://127.0.0.1:3001/healthz
+$apiHealth = curl.exe -s http://localhost:3001/healthz
 Write-Output "API Health: $apiHealth"
 
 # 2. Check Web Frontend HTTP response
-$webStatus = curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:5173
+$webStatus = curl.exe -s -o NUL -w "%{http_code}" http://localhost:5173
 Write-Output "Web Status Code: $webStatus"
 
 # 3. Check Database Seed & Active SKUs
-$skuCount = (curl.exe -s http://127.0.0.1:3001/api/skus | ConvertFrom-Json).Count
+$skuCount = (curl.exe -s http://localhost:3001/api/skus | ConvertFrom-Json).Count
 Write-Output "Active SKUs count: $skuCount"
 ```
 

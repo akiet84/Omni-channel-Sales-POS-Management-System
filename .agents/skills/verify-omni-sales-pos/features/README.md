@@ -4,9 +4,9 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Baseline preconditions
 
-- Launch the backend API at `http://127.0.0.1:3001` and the web application at `http://127.0.0.1:5173`.
-- Ensure database schema is migrated and default seeds are executed (`pnpm --filter @omni-sales/api run seed`).
-- Run the Doctor check (`curl.exe -s http://127.0.0.1:3001/healthz`) and require status code 200.
+- Launch the backend API at `http://localhost:3001` and the web application at `http://localhost:5173`.
+- Ensure database schema is migrated and clean default seeds are executed (`pnpm --filter @omni-sales/api exec prisma db push --force-reset` then `pnpm --filter @omni-sales/api run seed`).
+- Run the Doctor check (`curl.exe -s http://localhost:3001/healthz`) and require status code 200.
 - Never drive an instance that was not initialized with the baseline seed data.
 
 ## Driving conventions
@@ -15,7 +15,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Prefer stable handles (data attributes, semantic HTML elements, query parameters) over visual coordinates.
 - Treat every command as literal. Keep parameters and expected values unchanged.
 - Execute API actions using `curl.exe` or HTTP fetch.
-- Execute UI actions against `http://127.0.0.1:5173`.
+- Execute UI actions against `http://localhost:5173`.
 - Preserve proof artifacts in `.scratch/verification-proof/` during cleanup.
 
 ## Proof and skip reporting

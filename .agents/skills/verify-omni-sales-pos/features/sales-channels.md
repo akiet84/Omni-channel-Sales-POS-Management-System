@@ -4,23 +4,23 @@ The Sales Channels feature manages the active platforms through which orders are
 
 ## Sub-features
 
-- `CH-LIST`: List all configured sales channels with active statuses.
-- `CH-TYPES`: Distinguish POS quầy channels from online e-commerce channels.
+- `CH-LIST`: List active sales channels with their platform identifiers and types.
+- `CH-TYPES`: Distinguish POS quầy channels (`POS`) from online e-commerce channels (`SHOPEE`, `TIKTOK_SHOP`).
 
 ## How to get to it (user POV)
 
-- **Admin Channel Settings**: Administrators view connected channels in the admin dashboard.
 - **Backend API**: Send a `GET` request to `http://localhost:3001/api/channels`.
+- **Admin Dashboard**: Channel views in the web frontend are planned; channels are currently managed and inspected via API endpoints.
 
 ## Driving it with curl and API
 
 Preconditions:
-- Backend API running on `http://127.0.0.1:3001`.
-- Seed data loaded.
+- Backend API running on `http://localhost:3001`.
+- Clean seed data loaded (`pnpm --filter @omni-sales/api exec prisma db push --force-reset` then `pnpm --filter @omni-sales/api run seed`).
 
 - **Query active sales channels:**
   ```powershell
-  $channels = curl.exe -s http://127.0.0.1:3001/api/channels | ConvertFrom-Json
+  $channels = curl.exe -s http://localhost:3001/api/channels | ConvertFrom-Json
   Write-Output "Channels found: $($channels.Count)"
   $channels | ForEach-Object { Write-Output "Channel: $($_.name) - Type: $($_.type) - Active: $($_.isActive)" }
   ```
@@ -30,4 +30,4 @@ Preconditions:
 
 ## Gotchas
 
-- Inactive channels (`isActive: false`) are filtered out from default POS views so cashiers do not mistakenly assign orders to disabled channels.
+- The `GET /api/channels` endpoint filters with `where: { isActive: true }` at the database level, returning only active channels. Inactive channels (`isActive: false`) are suppressed.

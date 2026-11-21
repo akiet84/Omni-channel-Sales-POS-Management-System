@@ -16,23 +16,28 @@ The Inventory Overview allows store managers and cashiers to inspect all active 
 ## Driving it with curl and API
 
 Preconditions:
-- Backend API running on `http://127.0.0.1:3001`.
-- Seed data loaded (`pnpm --filter @omni-sales/api run seed`).
+- Backend API running on `http://localhost:3001`.
+- Clean seed data loaded (`pnpm --filter @omni-sales/api exec prisma db push --force-reset` then `pnpm --filter @omni-sales/api run seed`).
 
 - **Query all SKUs and verify inventory split:**
   ```powershell
-  $skus = curl.exe -s http://127.0.0.1:3001/api/skus | ConvertFrom-Json
+  $skus = curl.exe -s http://localhost:3001/api/skus | ConvertFrom-Json
   Write-Output "Total SKUs returned: $($skus.Count)"
-  $first = $skus[0]
-  Write-Output "First SKU: $($first.skuCode) - OnHand: $($first.inventory.onHand), Reserved: $($first.inventory.reserved), Available: $($first.inventory.available)"
+  $allMathValid = $true
+  foreach ($s in $skus) {
+      if ($s.inventory.available -ne ($s.inventory.onHand - $s.inventory.reserved)) {
+          $allMathValid = $false
+      }
+  }
+  Write-Output "All SKUs satisfy Available == OnHand - Reserved: $allMathValid"
   ```
   Expected observable result:
   - `Total SKUs returned`: `>= 10`
-  - For every SKU: `$first.inventory.available -eq ($first.inventory.onHand - $first.inventory.reserved)`.
+  - `All SKUs satisfy Available == OnHand - Reserved`: `True`
 
 - **Web UI table verification:**
   ```powershell
-  $html = curl.exe -s http://127.0.0.1:5173
+  $html = curl.exe -s http://localhost:5173
   $hasTitle = $html -match "Omni POS - Bán Hàng Đa Kênh"
   Write-Output "Web HTML renders Title: $hasTitle"
   ```
@@ -41,5 +46,5 @@ Preconditions:
 
 ## Gotchas
 
-- If database has not been seeded, `GET /api/skus` returns an empty array `[]`. Run `pnpm --filter @omni-sales/api run seed` before driving.
+- If database has not been seeded, `GET /api/skus` returns an empty array `[]`. Run seed command with `--force-reset` before driving.
 - `available` must never be manually updated independently; it must always be computed from `onHand - reserved` as specified in ADR 0004.
