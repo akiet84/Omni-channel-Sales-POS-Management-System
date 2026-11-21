@@ -86,4 +86,14 @@ describe('InventoryService & Split Inventory Model (ADR 0004)', () => {
       InventoryService.adjustInventory(sku!.id, -15, 0)
     ).rejects.toThrow(/Insufficient available stock/);
   });
+
+  it('rejects negative reserved inventory to prevent artificial available inflation', async () => {
+    const sku = await InventoryService.findByBarcodeOrCode('TEST-SKU-001');
+    expect(sku).not.toBeNull();
+
+    // Reserved is currently 8. Trying to decrement by 10 (reservedDelta = -10) must be rejected
+    await expect(
+      InventoryService.adjustInventory(sku!.id, 0, -10)
+    ).rejects.toThrow(/reserved cannot be negative/);
+  });
 });

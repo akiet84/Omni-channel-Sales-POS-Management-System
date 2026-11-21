@@ -77,10 +77,19 @@ export class InventoryService {
       const newAvailable = newOnHand - newReserved;
 
       if (newOnHand < 0) {
-        throw new Error(`Insufficient on-hand stock for SKU: ${skuId}`);
+        throw new Error(
+          `Insufficient on-hand stock for SKU: ${skuId} (current: ${current.onHand}, delta: ${onHandDelta})`
+        );
+      }
+      if (newReserved < 0) {
+        throw new Error(
+          `Invalid reserved stock for SKU: ${skuId}: reserved cannot be negative (current: ${current.reserved}, delta: ${reservedDelta})`
+        );
       }
       if (newAvailable < 0) {
-        throw new Error(`Insufficient available stock for SKU: ${skuId}`);
+        throw new Error(
+          `Insufficient available stock for SKU: ${skuId} (current available: ${current.available}, calculated: ${newAvailable})`
+        );
       }
 
       return tx.inventoryBalance.update({

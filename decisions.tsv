@@ -1,0 +1,15 @@
+ts	phase	decision	why	evidence	result
+2026-11-21T04:22:36Z	setup	Installed mattpocock-skills as project plugin under .agents/plugins	User requested Antigravity config and clean separation from Claude/OpenAI configs	.agents/plugins/mattpocock-skills/plugin.json	27 skills active
+2026-11-21T05:23:16Z	design	Chose centralized omni-channel inventory over partitioned channels	Maximizes sellable inventory across in-store and online channels	docs/adr/0001-centralized-omni-channel-inventory.md	ADR 0001 accepted
+2026-11-21T05:24:48Z	design	Enforced always-online POS and rejected offline-first caching	Prevents cross-channel overselling during network drift	docs/adr/0002-always-online-pos-consistency.md	ADR 0002 accepted
+2026-11-21T05:24:53Z	design	Adopted Channel Adapter pattern and Worker Queue for marketplace sync	Decouples core business logic from diverse marketplace API formats	docs/adr/0003-channel-adapter-and-message-queue.md	ADR 0003 accepted
+2026-11-21T05:41:21Z	design	Established Split Inventory Model: Available = On-hand - Reserved	Reflects physical shelf reality while reserving stock for online orders	docs/adr/0004-inventory-reservation-model.md	ADR 0004 accepted
+2026-11-21T05:41:28Z	design	Mandated Direct ESC/POS printing and rejected browser window.print()	Sub-second silent checkout receipt and automated cash drawer kick	docs/adr/0005-direct-escpos-hardware-printing.md	ADR 0005 accepted
+2026-11-21T05:46:00Z	spec	Synthesized and published full spec with 26 user stories	Codifies problem, solution, test seams, and out-of-scope boundaries	.scratch/sales-management/spec.md	ready-for-agent
+2026-11-21T05:49:28Z	tickets	Decomposed spec into 10 tracer-bullet vertical slices	Allows parallel and sequential agent implementation with explicit blockers	.scratch/sales-management/issues/	10 tickets published
+2026-11-21T05:58:04Z	implement	Implemented Monorepo foundations, shared types, and Prisma domain schema	Delivers foundational database layer, models, and 10 seeded SKUs	apps/api/prisma/seed.ts	10 SKUs seeded
+2026-11-21T05:58:16Z	verify	Wrote and executed automated integration suite for split inventory math	Proves Available = On-hand - Reserved and validates error on deficit	apps/api/tests/integration/inventory.test.ts	4/4 tests passed
+2026-11-21T05:59:42Z	commit	Committed Monorepo setup and domain foundations to git	Locks in Ticket 01 delivery before proceeding to next frontier slice	commit 6899054	ticket-01 resolved
+2026-11-21T06:01:28Z	harness	Generated verify-omni-sales-pos verification skill and feature map	Provides automated launch, doctor check, and driving recipes for next agents	.agents/skills/verify-omni-sales-pos/SKILL.md	ready-for-driving
+2026-11-21T06:02:04Z	verify	Proved verification skill end-to-end and persisted proof evidence	Demonstrates app starts, doctor passes, and features respond as expected	.scratch/verification-proof/run-01/evidence.json	proven and cleaned up
+2026-11-21T06:08:33Z	interrogate	Adversarial stress-test proved negative reserved inventory vulnerability	Repro demonstrated reserved < 0 inflates Available above On-hand	apps/api/src/services/inventory.service.ts:75	finding proven by run
