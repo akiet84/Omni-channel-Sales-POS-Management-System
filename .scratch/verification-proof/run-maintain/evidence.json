@@ -1,0 +1,123 @@
+{
+  "runId": "run-maintain",
+  "timestamp": "2026-11-21T08:37:20.784Z",
+  "doctor": {
+    "apiHealth": {
+      "status": "ok",
+      "timestamp": "2026-11-21T08:37:20.767Z"
+    },
+    "webStatusCode": 200,
+    "skuCount": 10
+  },
+  "testSuite": {
+    "command": "pnpm --filter @omni-sales/api run test",
+    "status": "passed",
+    "totalTests": 5
+  },
+  "features": [
+    {
+      "feature": "inventory-overview",
+      "totalSkus": 10,
+      "invariantHolds": true,
+      "sampleSku": "VI-DA-NAU",
+      "webRendersTitle": true
+    },
+    {
+      "feature": "sku-barcode-search",
+      "barcodeSearch": {
+        "id": "cmwq5lk550003vhig4hn2idno",
+        "productId": "cmwq5lk520001vhigwcusg3rd",
+        "skuCode": "AT-COT-TRANG-M",
+        "barcode": "893600100101",
+        "name": "Áo Thun Cotton - Trắng / M",
+        "variantAttributes": "{\"color\":\"Trắng\",\"size\":\"M\"}",
+        "price": 199000,
+        "costPrice": 90000,
+        "isActive": true,
+        "createdAt": "2026-11-21T08:36:09.401Z",
+        "updatedAt": "2026-11-21T08:36:09.401Z",
+        "inventory": {
+          "id": "cmwq5lk550004vhigug9ua1nw",
+          "skuId": "cmwq5lk550003vhig4hn2idno",
+          "onHand": 50,
+          "reserved": 5,
+          "available": 45,
+          "updatedAt": "2026-11-21T08:36:09.401Z"
+        },
+        "product": {
+          "id": "cmwq5lk520001vhigwcusg3rd",
+          "name": "Áo Thun Cotton Compact 100%",
+          "description": null,
+          "category": "Thời trang nam",
+          "basePrice": 199000,
+          "isActive": true,
+          "createdAt": "2026-11-21T08:36:09.399Z",
+          "updatedAt": "2026-11-21T08:36:09.399Z"
+        }
+      },
+      "skuCodeSearch": {
+        "id": "cmwq5lk5o000kvhig1gf68ojh",
+        "productId": "cmwq5lk5m000ivhigx3fgbq3g",
+        "skuCode": "SNK-CLS-TRANG-41",
+        "barcode": "893600300301",
+        "name": "Giày Sneaker Classic - Trắng / 41",
+        "variantAttributes": "{\"color\":\"Trắng\",\"size\":\"41\"}",
+        "price": 650000,
+        "costPrice": 320000,
+        "isActive": true,
+        "createdAt": "2026-11-21T08:36:09.421Z",
+        "updatedAt": "2026-11-21T08:36:09.421Z",
+        "inventory": {
+          "id": "cmwq5lk5o000lvhigdkosb5up",
+          "skuId": "cmwq5lk5o000kvhig1gf68ojh",
+          "onHand": 15,
+          "reserved": 1,
+          "available": 14,
+          "updatedAt": "2026-11-21T08:36:09.421Z"
+        },
+        "product": {
+          "id": "cmwq5lk5m000ivhigx3fgbq3g",
+          "name": "Giày Sneaker Thể Thao Classic",
+          "description": null,
+          "category": "Giày dép",
+          "basePrice": 650000,
+          "isActive": true,
+          "createdAt": "2026-11-21T08:36:09.419Z",
+          "updatedAt": "2026-11-21T08:36:09.419Z"
+        }
+      },
+      "querySearchCount": 2,
+      "notFoundStatus": 404
+    },
+    {
+      "feature": "sales-channels",
+      "channelsCount": 3,
+      "channels": [
+        {
+          "id": "channel-pos-main",
+          "name": "Cửa hàng chính (POS Quầy)",
+          "type": "POS",
+          "isActive": true,
+          "createdAt": "2026-11-21T08:36:09.379Z",
+          "updatedAt": "2026-11-21T08:36:09.379Z"
+        },
+        {
+          "id": "channel-shopee",
+          "name": "Gian hàng Shopee Mall",
+          "type": "SHOPEE",
+          "isActive": true,
+          "createdAt": "2026-11-21T08:36:09.389Z",
+          "updatedAt": "2026-11-21T08:36:09.389Z"
+        },
+        {
+          "id": "channel-tiktok",
+          "name": "TikTok Shop Official",
+          "type": "TIKTOK_SHOP",
+          "isActive": true,
+          "createdAt": "2026-11-21T08:36:09.392Z",
+          "updatedAt": "2026-11-21T08:36:09.392Z"
+        }
+      ]
+    }
+  ]
+}

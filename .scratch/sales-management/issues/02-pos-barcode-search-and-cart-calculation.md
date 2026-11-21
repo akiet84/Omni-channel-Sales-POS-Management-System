@@ -4,11 +4,11 @@
 
 **Blocked by:** 01 (Monorepo Setup and Domain Foundations)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Thu ngân quét mã vạch hoặc nhập SKU vào ô tìm kiếm thì sản phẩm tương ứng được tự động thêm vào giỏ hàng ngay lập tức.
-- [ ] Danh sách gợi ý tìm kiếm hiển thị rõ ràng phiên bản (màu sắc, kích thước) và số lượng tồn khả dụng (`Available Inventory`).
-- [ ] Giỏ hàng cho phép tăng/giảm số lượng bằng phím mũi tên hoặc gõ trực tiếp, chặn tăng số lượng nếu vượt quá `Available Inventory`.
-- [ ] Cho phép áp dụng giảm giá trên từng dòng sản phẩm hoặc trên tổng đơn hàng (theo % hoặc số tiền cố định).
-- [ ] Hỗ trợ các phím tắt tiện lợi: `F2` để focus ô tìm kiếm, `F8` để xóa giỏ hàng, `F9` để chuyển sang bước thanh toán.
-- [ ] Viết test tự động kiểm thử logic tính toán giỏ hàng: tổng tiền trước giảm giá, giá trị giảm giá, thuế VAT và tổng tiền phải thanh toán cuối cùng.
+- [x] Thu ngân quét mã vạch hoặc nhập SKU vào ô tìm kiếm thì sản phẩm tương ứng được tự động thêm vào giỏ hàng ngay lập tức.
+- [x] Danh sách gợi ý tìm kiếm hiển thị rõ ràng phiên bản (màu sắc, kích thước) và số lượng tồn khả dụng (`Available Inventory`).
+- [x] Giỏ hàng cho phép tăng/giảm số lượng bằng phím mũi tên hoặc gõ trực tiếp, chặn tăng số lượng nếu vượt quá `Available Inventory`.
+- [x] Cho phép áp dụng giảm giá trên từng dòng sản phẩm hoặc trên tổng đơn hàng (theo % hoặc số tiền cố định).
+- [x] Hỗ trợ các phím tắt tiện lợi: `F2` để focus ô tìm kiếm, `F8` để xóa giỏ hàng, `F9` để chuyển sang bước thanh toán.
+- [x] Viết test tự động kiểm thử logic tính toán giỏ hàng: tổng tiền trước giảm giá, giá trị giảm giá, thuế VAT và tổng tiền phải thanh toán cuối cùng.
